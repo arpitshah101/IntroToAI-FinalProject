@@ -287,7 +287,7 @@ def runClassifier(args, options):
   featureFunction = args['featureFunction']
   classifier = args['classifier']
   printImage = args['printImage']
-      
+  
   # Load data  
   numTraining = options.training
   numTest = options.test
