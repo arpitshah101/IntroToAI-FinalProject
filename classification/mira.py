@@ -8,6 +8,9 @@
 
 # Mira implementation
 import util
+import math
+import random
+import sys
 PRINT = True
 
 class MiraClassifier:
@@ -58,6 +61,7 @@ class MiraClassifier:
     for iteration in range(self.max_iterations):
       print "Starting iteration ", iteration, "..."
       for C in Cgrid:      
+        # Randomize training data
         list_of_indices = [i for i in range(len(trainingData))]
         while len(list_of_indices) > 0:
           "*** YOUR CODE HERE ***"
@@ -65,16 +69,36 @@ class MiraClassifier:
           list_of_indices.remove(random_datum_index) # Do not analyze this datum again
           training_datum = trainingData[random_datum_index] # Counter for a datum
           training_true_label = trainingLabels[random_datum_index] # True label for a datum
-          computed_label = self.find_max_score_label(training_datum)
+          
+          ##### MAX SCORE ARG CALCULATION
+          temp_counter = util.Counter()
+          for label in self.legalLabels:
+            temp_counter[label] = training_datum * self.weights[label]
+          computed_label = temp_counter.argMax()
+          ##### END MAX SCORE ARG CALCULATION
+
+          #computed_label = self.find_max_score_label(training_datum)
+          
           if (computed_label == training_true_label):
             print "Correctly identified label ", computed_label, "!"
           else:
             print "Error: predicted ", computed_label, ", actual: ", training_true_label
             # Adjust weights for future iterations
-            self.weights[training_true_label] += training_datum
-            self.weights[computed_label] -= training_datum
-      
+            feature_scale_factor_num = (self.weights[computed_label] - self.weights[training_true_label]) * training_datum + 1
+            raw_norm = 0
+            for key in training_datum.keys():
+              raw_norm += math.pow(training_datum[key], 2)
+            feature_scale_factor_denom = 2 * raw_norm
+            
+            #print "Numer: ", feature_scale_factor_num
+            #print "Denom: ", feature_scale_factor_denom
+            feature_scale_factor = feature_scale_factor_num / feature_scale_factor_denom
+            #print "Num/denom: ", feature_scale_factor
+            feature_scale_factor = feature_scale_factor if (feature_scale_factor < C) else C 
 
+            #Scale weight vectors accordingly
+            self.weights[training_true_label] += training_datum * feature_scale_factor
+            self.weights[computed_label] -= training_datum * feature_scale_factor
 
     util.raiseNotDefined()
 
