@@ -87,23 +87,23 @@ class PerceptronClassifier:
   def find_max_score_label(self, my_datum):
     max_score = self.compute_score(my_datum, self.legalLabels[0])
     max_score_label = self.legalLabels[0]
-    print "Initial max score: ", max_score
-    print "Initial max label: ", max_score_label
+    #print "Initial max score: ", max_score
+    #print "Initial max label: ", max_score_label
     for i in range(1,len(self.legalLabels)):
       new_score = self.compute_score(my_datum, self.legalLabels[i])
       if new_score > max_score:
         max_score = new_score
         max_score_label = self.legalLabels[i];
-        print "Updated max label: ", max_score_label
-        print "Updated max score: ", max_score
-    print "Max label: ", max_score_label
-    print "Max score: ", max_score
+    #   print "Updated max label: ", max_score_label
+    #   print "Updated max score: ", max_score
+    #print "Max label: ", max_score_label
+    #print "Max score: ", max_score
     return max_score_label
 
   # Compute score for a given label
   def compute_score(self, feature_list, true_label):
     score = feature_list * self.weights[true_label]
-    print "Computed score: ", score, "true label: ", true_label
+    #print "Computed score: ", score, "true label: ", true_label
     return score
 
   def classify(self, data ):

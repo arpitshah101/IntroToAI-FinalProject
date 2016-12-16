@@ -55,6 +55,27 @@ class MiraClassifier:
     representing a vector of values.
     """
     "*** YOUR CODE HERE ***"
+    for iteration in range(self.max_iterations):
+      print "Starting iteration ", iteration, "..."
+      for C in Cgrid:      
+        list_of_indices = [i for i in range(len(trainingData))]
+        while len(list_of_indices) > 0:
+          "*** YOUR CODE HERE ***"
+          random_datum_index = random.choice(list_of_indices) # Choose a datum to analyze
+          list_of_indices.remove(random_datum_index) # Do not analyze this datum again
+          training_datum = trainingData[random_datum_index] # Counter for a datum
+          training_true_label = trainingLabels[random_datum_index] # True label for a datum
+          computed_label = self.find_max_score_label(training_datum)
+          if (computed_label == training_true_label):
+            print "Correctly identified label ", computed_label, "!"
+          else:
+            print "Error: predicted ", computed_label, ", actual: ", training_true_label
+            # Adjust weights for future iterations
+            self.weights[training_true_label] += training_datum
+            self.weights[computed_label] -= training_datum
+      
+
+
     util.raiseNotDefined()
 
   def classify(self, data ):
