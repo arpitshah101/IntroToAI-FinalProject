@@ -16,6 +16,7 @@ import mira
 import samples
 import sys
 import util
+import time
 
 TEST_SET_SIZE = 100
 DIGIT_DATUM_WIDTH=28
@@ -109,19 +110,30 @@ def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
   This code won't be evaluated. It is for your own optional use
   (and you can modify the signature if you want).
   """
-  
+  # Populate counters with incorrect labels for future display
+  #error_counter_list = [util.Counter()] * len(testLabels)
+  #for i in range(len(testLabels)):
+  #  if (guesses[i] != testLabels[i]):
+  #    error_counter_list[testLabels[i]][guesses[i]] += 1
+
+  #print "Error Analysis:"
+  #for i in range(len(testLabels)):
+  #  for j in range(len(error_counter_list[i].sortedKeys())):
+  #    if (testLabels[i] != j):
+  #      print "Number of ", testLabels[i], "mistakenly read as ", j, ": ", error_counter_list[i][j]
+
   # Put any code here...
   # Example of use:
-  for i in range(len(guesses)):
-      prediction = guesses[i]
-      truth = testLabels[i]
-      if (prediction != truth):
-          print "==================================="
-          print "Mistake on example %d" % i 
-          print "Predicted %d; truth is %d" % (prediction, truth)
-          print "Image: "
-          print rawTestData[i]
-          break
+  #for i in range(len(guesses)):
+  #    prediction = guesses[i]
+  #    truth = testLabels[i]
+  #    if (prediction != truth):
+  #        print "==================================="
+  #        print "Mistake on example %d" % i 
+  #        print "Predicted %d; truth is %d" % (prediction, truth)
+  #        print "Image: "
+  #        print rawTestData[i]
+  #        break
 
 
 ## =====================
@@ -287,7 +299,7 @@ def runClassifier(args, options):
   featureFunction = args['featureFunction']
   classifier = args['classifier']
   printImage = args['printImage']
-      
+  
   # Load data  
   numTraining = options.training
   numTest = options.test
@@ -315,18 +327,28 @@ def runClassifier(args, options):
   testData = map(featureFunction, rawTestData)
   
   # Conduct training and testing
-  print "Training..."
+  # Assume validation data is part of "training" sequence (for the perceptron algorithm)
+  print "Training/validating..."
+  #print "Training Data: "
+  #print trainingData
+  trainingData.extend(validationData)
+  trainingLabels.extend(validationLabels)
+  start_time = time.time()
   classifier.train(trainingData, trainingLabels, validationData, validationLabels)
-  print "Validating..."
-  guesses = classifier.classify(validationData)
-  correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
-  print str(correct), ("correct out of " + str(len(validationLabels)) + " (%.1f%%).") % (100.0 * correct / len(validationLabels))
+  #print "Validating..."
+  #guesses = classifier.classify(validationData)
+  #correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
+  #print str(correct), ("correct out of " + str(len(validationLabels)) + " (%.1f%%).") % (100.0 * correct / len(validationLabels))
+  training_time = time.time() - start_time
   print "Testing..."
   guesses = classifier.classify(testData)
-  correct = [guesses[i] == testLabels[i] for i in range(len(testLabels))].count(True)
+  match_results = [guesses[i] == testLabels[i] for i in range(len(testLabels))]
+  correct = match_results.count(True)
   print str(correct), ("correct out of " + str(len(testLabels)) + " (%.1f%%).") % (100.0 * correct / len(testLabels))
   analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
-  
+  print "TIME TO TRAIN: ", training_time, " seconds"
+  print "PREDICTION ERROR: ", (100.0 * (len(match_results) - correct) / len(match_results)), "%"
+
   # do odds ratio computation if specified at command line
   if((options.odds) & (options.classifier == "naiveBayes" or (options.classifier == "nb")) ):
     label1, label2 = options.label1, options.label2
