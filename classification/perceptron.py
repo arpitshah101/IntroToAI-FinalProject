@@ -74,9 +74,10 @@ class PerceptronClassifier:
           training_true_label = trainingLabels[random_datum_index] # True label for a datum
           computed_label = self.find_max_score_label(training_datum)
           if (computed_label == training_true_label):
-            print "Correctly identified label ", computed_label, "!"
-          else:
-            print "Error: predicted ", computed_label, ", actual: ", training_true_label
+            #print "Correctly identified label ", computed_label, "!"
+            pass
+	  else:
+            #print "Error: predicted ", computed_label, ", actual: ", training_true_label
             # Adjust weights for future iterations
             self.weights[training_true_label] += training_datum
             self.weights[computed_label] -= training_datum

@@ -67,7 +67,7 @@ class MiraClassifier:
     for c_index in range(len(Cgrid)):
       c_weights = [util.Counter() for i in range(len(self.legalLabels))] # Used to test each C value and run validation data
       for iteration in range(self.max_iterations):
-        print "Starting iteration ", iteration, " for C = ", Cgrid[c_index], ": "
+        print "Starting iteration ", iteration, " for C = ", Cgrid[c_index], "..."
         # Randomize training data
         list_of_indices = [i for i in range(len(trainingData))]
         while len(list_of_indices) > 0:
@@ -87,9 +87,10 @@ class MiraClassifier:
           #computed_label = self.find_max_score_label(training_datum)
           
           if (computed_label == training_true_label):
-            print "Correctly identified label ", computed_label, "!"
-          else:
-            print "Error: predicted ", computed_label, ", actual: ", training_true_label
+            #print "Correctly identified label ", computed_label, "!"
+            pass
+	  else:
+            #print "Error: predicted ", computed_label, ", actual: ", training_true_label
             # Adjust weights for future iterations
             feature_scale_factor_num = (c_weights[computed_label] - c_weights[training_true_label]) * training_datum + 1.0
             raw_norm = 0
@@ -147,6 +148,12 @@ class MiraClassifier:
     featuresOdds = []
 
     "*** YOUR CODE HERE ***"
+    diff_weights = self.weights[label1] - self.weights[label2]
+    for key in diff_weights:
+	diff_weights[key] = math.fabs(diff_weights[key]) # Account for negative counter values
+    sorted_keys = diff_vector.sortedKeys()
+    for key in sortedKeys[:100]:
+	featuresOdds.append(diff_weights[key])
 
     return featuresOdds
 
