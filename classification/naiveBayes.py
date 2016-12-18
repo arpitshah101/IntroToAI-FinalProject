@@ -61,7 +61,31 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     """
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    self.counters = []
+    for x in range(len(self.legalLabels)):
+      self.counters.append(util.Counter())
+
+    '''
+      establish a list of counters representing each label
+      establish 1 more to keep count of the # of documents encountered per label
+
+      for each trainingData document,
+        create temp counter c
+        iterate over each feature:
+          each feature's
+    '''
+
+    # Last counter is for overall counts of documents
+    self.counters.append(util.Counter())
+
+    for data, label in zip(trainingData, trainingLabels):
+      self.counters[label] += data
+      self.counters[-1][label] += 1
+
+    for label in self.legalLabels:
+      self.counters[label].incrementAll(self.features, self.k)
+      self.counters[label].normalize()
         
   def classify(self, testData):
     """
@@ -89,7 +113,27 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     logJoint = util.Counter()
     
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # print datum
+    '''
+      for each y of label:
+        a = find log( P(y) )
+        probs = []
+        for each f of feature:
+          prob = counters[y][f]
+          if (datum[f] == 0):
+            prob = 1 - prob
+          probs.append(prob)
+        probs = [math.log10(x + self.k) for x in probs]
+    '''
+
+    for y in self.legalLabels:
+      probs = []
+      for feature in self.features:
+        prob = self.counters[y][feature]
+        if (datum[feature] == 0):
+          prob = 1 - prob
+        probs.append(math.log(prob))
+      logJoint[y] = math.log(self.counters[-1][y]) + sum(probs)
     
     return logJoint
   
