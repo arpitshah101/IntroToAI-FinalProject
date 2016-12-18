@@ -221,6 +221,11 @@ class Counter(dict):
     """
     return Counter(dict.copy(self))
   
+  def multiply_by_scalar(self, val):
+    for key in self.keys():
+      self[key] *= val
+    return self
+
   def __mul__(self, y ):
     """
     Multiplying two counters gives the dot product of their vectors where
