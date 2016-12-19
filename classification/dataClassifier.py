@@ -18,6 +18,8 @@ import sys
 import util
 import time
 
+import pickle
+
 TEST_SET_SIZE = 100
 DIGIT_DATUM_WIDTH=28
 DIGIT_DATUM_HEIGHT=28
@@ -334,13 +336,31 @@ def runClassifier(args, options):
   trainingData.extend(validationData)
   trainingLabels.extend(validationLabels)
   start_time = time.time()
-  classifier.train(trainingData, trainingLabels, validationData, validationLabels)
+  # classifier.train(trainingData, trainingLabels, validationData, validationLabels)
   #print "Validating..."
   #guesses = classifier.classify(validationData)
   #correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
   #print str(correct), ("correct out of " + str(len(validationLabels)) + " (%.1f%%).") % (100.0 * correct / len(validationLabels))
   training_time = time.time() - start_time
   print "Testing..."
+  if (options.classifier == "naiveBayes" or options.classifier == "nb"):
+    if (options.data == "digits"):
+      classifier.counters = pickle.load(open("models/nbDigits.p", "rb"))
+    else:
+      classifier.counters = pickle.load(open("models/nbFaces.p", "rb"))
+  elif (options.classifier == "perceptron"):
+    if (options.data == "digits"):
+      classifier.weights = pickle.load(open("models/perceptronDigits.p", "rb"))
+    else:
+      classifier.weights = pickle.load(open("models/perceptronFaces.p", "rb"))
+  elif (options.classifier == "mira"):
+    if (options.data == "digits"):
+      classifier.weights = pickle.load(open("models/miraDigits.p", "rb"))
+    else:
+      classifier.weights = pickle.load(open("models/miraFaces.p", "rb"))
+  
+  classifier.features = trainingData[0].keys()
+  
   guesses = classifier.classify(testData)
   match_results = [guesses[i] == testLabels[i] for i in range(len(testLabels))]
   correct = match_results.count(True)
